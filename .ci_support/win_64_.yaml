@@ -19,4 +19,4 @@ libzip:
 target_platform:
 - win-64
 tinyxml2:
-- '10.0'
+- '11.0'
