@@ -1,0 +1,146 @@
+schema_version: 1
+
+context:
+  component_name: fuel-tools
+  cmake_name: fuel_tools
+  repo_name: ${{ "gz-" + component_name }}
+  version: 10.1.0
+  major_version: "10"
+  name: ${{ repo_name + major_version }}
+  component_version: ${{ component_name + major_version }}
+  cmake_version: ${{ cmake_name + major_version }}
+  cxx_name: ${{ "lib" + name }}
+
+recipe:
+  name: ${{ name }}
+  version: ${{ version }}
+
+source:
+  - url: https://github.com/gazebosim/${{ repo_name }}/archive/${{ repo_name }}${{ major_version }}_${{ version }}.tar.gz
+    sha256: e91621153885ab403d9ed6aaa39b936318bcf8458febe223478b74d0d8cb0151
+
+build:
+  number: 2
+
+outputs:
+  - package:
+      name: ${{ cxx_name }}
+    build:
+      script:
+        - if: unix
+          then: build_cxx.sh
+        - if: win
+          then: bld_cxx.bat
+    requirements:
+      build:
+        - ${{ compiler('cxx') }}
+        - ${{ compiler('c') }}
+        - ${{ stdlib('c') }}
+        - cmake
+        - ninja
+        - pkgconfig
+      host:
+        - libgz-cmake4
+        - libgz-math8
+        - libgz-msgs11
+        - libgz-common6
+        - libgz-tools2
+        - libcurl
+        - jsoncpp
+        - libzip
+        - yaml
+        - tinyxml2
+        - libprotobuf
+      run_exports:
+        - ${{ pin_subpackage(cxx_name, upper_bound='x') }}
+    tests:
+      - script:
+          - if: not win
+            then:
+              - test -f ${PREFIX}/include/gz/${{ cmake_version }}/gz/${{ cmake_name }}.hh
+              - test -f ${PREFIX}/lib/cmake/gz-${{ cmake_version }}/gz-${{ cmake_version }}-config.cmake
+          - if: linux
+            then:
+              - test -f ${PREFIX}/lib/libgz-${{ cmake_version }}.so
+          - if: osx
+            then:
+              - test -f ${PREFIX}/lib/libgz-${{ cmake_version }}.dylib
+          - if: win
+            then:
+              - if not exist %PREFIX%\\Library\\include\\gz\\${{ cmake_version }}\\gz\\${{ cmake_name }}.hh exit 1
+              - if not exist %PREFIX%\\Library\\lib\\gz-${{ cmake_version }}.lib exit 1
+              - if not exist %PREFIX%\\Library\\bin\\gz-${{ cmake_version }}.dll exit 1
+              - if not exist %PREFIX%\\Library\\lib\\cmake\\gz-${{ cmake_version }}\\gz-${{ cmake_version }}-config.cmake exit 1
+
+  - package:
+      name: ${{ name }}
+    requirements:
+      run:
+        - ${{ pin_subpackage(cxx_name, exact=True) }}
+      run_exports:
+        - ${{ pin_subpackage(cxx_name, upper_bound='x') }}
+    tests:
+      - script:
+          - if: not win
+            then:
+              - test -f ${PREFIX}/include/gz/${{ cmake_version }}/gz/${{ cmake_name }}.hh
+              - test -f ${PREFIX}/lib/cmake/gz-${{ cmake_version }}/gz-${{ cmake_version }}-config.cmake
+          - if: linux
+            then:
+              - test -f ${PREFIX}/lib/libgz-${{ cmake_version }}.so
+          - if: osx
+            then:
+              - test -f ${PREFIX}/lib/libgz-${{ cmake_version }}.dylib
+          - if: win
+            then:
+              - if not exist %PREFIX%\\Library\\include\\gz\\${{ cmake_version }}\\gz\\${{ cmake_name }}.hh exit 1
+              - if not exist %PREFIX%\\Library\\lib\\gz-${{ cmake_version }}.lib exit 1
+              - if not exist %PREFIX%\\Library\\bin\\gz-${{ cmake_version }}.dll exit 1
+              - if not exist %PREFIX%\\Library\\lib\\cmake\\gz-${{ cmake_version }}\\gz-${{ cmake_version }}-config.cmake exit 1
+
+  # Versionless dummy packages, see https://github.com/conda-forge/gz-sim-feedstock/issues/102
+  - package:
+      name: libgz-${{ component_name }}
+    requirements:
+      run:
+        - ${{ pin_subpackage(cxx_name, exact=true) }}
+      run_exports:
+        - ${{ pin_subpackage(cxx_name, upper_bound='x') }}
+        - ${{ pin_subpackage('libgz-fuel-tools', upper_bound='x') }}
+    tests:
+      - script:
+          - cmake-package-check gz-${{ cmake_name }}${{ major_version }}
+        requirements:
+          run:
+            - cmake-package-check
+            - ${{ compiler('c') }}
+            - ${{ compiler('cxx') }}
+
+  - package:
+      name: gz-${{ component_name }}
+    requirements:
+      run:
+        - ${{ pin_subpackage(name, exact=true) }}
+      run_exports:
+        - ${{ pin_subpackage(cxx_name, upper_bound='x') }}
+        - ${{ pin_subpackage('libgz-fuel-tools', upper_bound='x') }}
+    tests:
+      - script:
+          - cmake-package-check gz-${{ cmake_name }}${{ major_version }}
+        requirements:
+          run:
+            - cmake-package-check
+            - ${{ compiler('c') }}
+            - ${{ compiler('cxx') }}
+
+about:
+  homepage: https://github.com/gazebosim/${{ repo_name }}
+  license: Apache-2.0
+  license_file: LICENSE
+  summary: A client library and command line tools for interacting with Gazebo Fuel servers.
+
+extra:
+  feedstock-name: ${{ repo_name }}
+  recipe-maintainers:
+    - traversaro
+    - Tobias-Fischer
