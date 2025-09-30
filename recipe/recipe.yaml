@@ -109,7 +109,7 @@ outputs:
         - ${{ pin_subpackage('libgz-fuel-tools', upper_bound='x') }}
     tests:
       - script:
-          - cmake-package-check gz-${{ component_name }}${{ major_version }}
+          - cmake-package-check gz-${{ cmake_name }}${{ major_version }}
         requirements:
           run:
             - cmake-package-check
@@ -126,7 +126,7 @@ outputs:
         - ${{ pin_subpackage('libgz-fuel-tools', upper_bound='x') }}
     tests:
       - script:
-          - cmake-package-check gz-${{ component_name }}${{ major_version }}
+          - cmake-package-check gz-${{ cmake_name }}${{ major_version }}
         requirements:
           run:
             - cmake-package-check
