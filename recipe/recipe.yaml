@@ -60,7 +60,10 @@ outputs:
           lib:
             - gz-${{ cmake_name }}
       - script:
-          - cmake-package-check gz-${{ cmake_name }} --targets gz-${{ cmake_name }}::gz-${{ cmake_name }}
+          # Workaround for https://github.com/conda-forge/gz-fuel-tools-feedstock/pull/67#issuecomment-3368804308
+          - if: build_platform == target_platform
+            then:
+              - cmake-package-check gz-${{ cmake_name }} --targets gz-${{ cmake_name }}::gz-${{ cmake_name }}
         requirements:
           run:
             - cmake-package-check
@@ -76,7 +79,10 @@ outputs:
         - ${{ pin_subpackage(cxx_name, upper_bound='x') }}
     tests:
       - script:
-          - cmake-package-check gz-${{ cmake_name }} --targets gz-${{ cmake_name }}::gz-${{ cmake_name }}
+          # Workaround for https://github.com/conda-forge/gz-fuel-tools-feedstock/pull/67#issuecomment-3368804308
+          - if: build_platform == target_platform
+            then:
+              - cmake-package-check gz-${{ cmake_name }} --targets gz-${{ cmake_name }}::gz-${{ cmake_name }}
         requirements:
           run:
             - cmake-package-check
