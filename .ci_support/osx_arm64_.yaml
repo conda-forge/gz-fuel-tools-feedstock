@@ -33,7 +33,7 @@ libgz_msgs:
 libgz_tools:
 - '2'
 libprotobuf:
-- 6.31.1
+- 6.33.5
 libzip:
 - '1'
 macos_machine:
