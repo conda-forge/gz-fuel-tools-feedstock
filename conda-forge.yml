@@ -1,6 +1,5 @@
 bot:
   abi_migration_branches:
-  # See https://github.com/gazebosim/docs/blob/master/tools/versions.md for non-EOL version
   - v9
   - v10
   automerge: true
